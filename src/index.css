@@ -1,51 +1,31 @@
-/* 由于在 index.html 中使用了 Tailwind CDN，此文件不再需要 @tailwind 指令。
-为了解决“界面无变化”的问题，我们在这里强制重置所有可能冲突的 Vite 默认样式。
-*/
-
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  
-  /* 强制背景色，防止被其他样式覆盖 */
-  background-color: #f8fafc !important;
-  color: #1e293b;
-  
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* 彻底重置 body，防止 Vite 默认的居中布局干扰 /
-  body {
-  margin: 0 !important;
-  display: block !important; / 修改这里：从 flex 改为 block，确保内容正常流式排列 */
-  min-width: 100% !important;
-  min-height: 100vh !important;
-  }
-  
-  #root {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  }
-  
-  /* 自定义滚动条美化 */
-  ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
-  background: transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-  }
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>角色资产进度看板</title>
+    
+    <!-- 关键修改：在这里引入 Tailwind CDN 脚本 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 保持基础配置，防止 JS 加载前的样式混乱 -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {}
+        }
+      }
+    </script>
+    <style>
+      body { 
+        margin: 0; 
+        background-color: #f8fafc; 
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
