@@ -101,7 +101,7 @@ const SimplePieChart = ({ data, size = 120 }: { data: { value: number; color: st
   );
 };
 
-// --- 主组件 (重命名为 App 以修复部署错误) ---
+// --- 主组件 ---
 
 export default function App() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'list'>('dashboard');
@@ -144,77 +144,126 @@ export default function App() {
   }, [stats.data]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
       <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">角色资产进度看板</h1>
           <p className="text-slate-500 text-sm mt-1">项目代号: Project Gio | 更新时间: 2026-01-9</p>
         </div>
-        <div className="flex bg-white p-1 rounded-lg shadow-sm border border-gray-200">
-          <button onClick={() => setViewMode('dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'dashboard' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-gray-50'}`}><BarChart3 size={16} /> 仪表盘</button>
-          <button onClick={() => setViewMode('list')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-gray-50'}`}><List size={16} /> 详细列表</button>
+        <div className="flex bg-white p-1 rounded-lg shadow-sm border border-slate-200">
+          <button 
+            onClick={() => setViewMode('dashboard')} 
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'dashboard' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+          >
+            <BarChart3 size={16} /> 仪表盘
+          </button>
+          <button 
+            onClick={() => setViewMode('list')} 
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+          >
+            <List size={16} /> 详细列表
+          </button>
         </div>
       </header>
 
-      <div className="mb-6 flex items-center gap-4 overflow-x-auto pb-2 border-b border-gray-100">
+      <div className="mb-6 flex items-center gap-4 overflow-x-auto pb-2 border-b border-slate-100">
         <span className="text-sm font-medium text-slate-500 shrink-0 flex items-center gap-1"><Filter size={14}/> 筛选:</span>
-        <button onClick={() => setFilterPriority('all')} className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 ${filterPriority === 'all' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-gray-200'}`}>全部角色</button>
+        <button 
+          onClick={() => setFilterPriority('all')} 
+          className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 transition-all ${filterPriority === 'all' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+        >
+          全部角色
+        </button>
         {(['p0', 'p1', 'p2'] as const).map(p => (
-          <button key={p} onClick={() => setFilterPriority(p)} className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 ${filterPriority === p ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200'}`}>{p.toUpperCase()}</button>
+          <button 
+            key={p} 
+            onClick={() => setFilterPriority(p)} 
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 transition-all ${filterPriority === p ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+          >
+            {p.toUpperCase()}
+          </button>
         ))}
       </div>
 
       {viewMode === 'dashboard' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
               <div className="text-slate-500 text-sm font-medium mb-1">{filterPriority === 'all' ? '总完工率' : `P${filterPriority.slice(1)} 完工率`}</div>
               <div className="flex items-end gap-2">
                 <div className="text-3xl font-bold text-slate-900">{stats.progress}%</div>
                 <div className="text-xs text-slate-400 mb-1.5">基于当前筛选</div>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-1.5 mt-3"><div className="bg-indigo-600 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${stats.progress}%` }} /></div>
+              <div className="w-full bg-slate-100 rounded-full h-1.5 mt-3">
+                <div className="bg-indigo-600 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${stats.progress}%` }} />
+              </div>
             </div>
+            
             <div className="bg-white p-5 rounded-xl border border-red-100 shadow-sm relative overflow-hidden">
-              <div className="absolute right-0 top-0 p-4 opacity-10"><AlertCircle size={64} className="text-red-500" /></div>
+              <div className="absolute right-[-10px] top-[-10px] opacity-10"><AlertCircle size={80} className="text-red-500" /></div>
               <div className="text-red-600 text-sm font-medium mb-1">需关注 (返修中)</div>
               <div className="text-3xl font-bold text-red-700">{stats.counts.revision} <span className="text-sm font-normal text-red-400">个环节</span></div>
               <p className="text-xs text-red-400 mt-2">阻碍流程推进</p>
             </div>
+
             <div className="bg-white p-5 rounded-xl border border-blue-100 shadow-sm">
               <div className="text-blue-600 text-sm font-medium mb-1">制作中</div>
               <div className="text-3xl font-bold text-blue-700">{stats.counts.doing} <span className="text-sm font-normal text-blue-400">个环节</span></div>
               <p className="text-xs text-blue-400 mt-2">正常流转中</p>
             </div>
+
             <div className="bg-white p-5 rounded-xl border border-green-100 shadow-sm">
               <div className="text-green-600 text-sm font-medium mb-1">已交付</div>
-              <div className="text-3xl font-bold text-green-700">{stats.counts.done} <span className="text-sm font-normal text-blue-400">个环节</span></div>
+              <div className="text-3xl font-bold text-green-700">{stats.counts.done} <span className="text-sm font-normal text-green-400">个环节</span></div>
               <p className="text-xs text-green-400 mt-2">等待下一步</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
               <h3 className="font-bold text-slate-800 mb-6">任务状态分布</h3>
-              <div className="flex items-center gap-8 justify-center">
-                <SimplePieChart size={160} data={[{ value: stats.counts.done, color: STATUS_CONFIG.done.barColor },{ value: stats.counts.doing, color: STATUS_CONFIG.doing.barColor },{ value: stats.counts.revision, color: STATUS_CONFIG.revision.barColor },{ value: stats.counts.todo, color: STATUS_CONFIG.todo.barColor }]} />
-                <div className="space-y-3">
+              <div className="flex items-center gap-8 justify-center flex-wrap">
+                <SimplePieChart 
+                  size={160} 
+                  data={[
+                    { value: stats.counts.done, color: STATUS_CONFIG.done.barColor },
+                    { value: stats.counts.doing, color: STATUS_CONFIG.doing.barColor },
+                    { value: stats.counts.revision, color: STATUS_CONFIG.revision.barColor },
+                    { value: stats.counts.todo, color: STATUS_CONFIG.todo.barColor }
+                  ]} 
+                />
+                <div className="space-y-3 min-w-[120px]">
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm text-slate-600">已完成 ({stats.counts.done})</span></div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm text-slate-600">进行中 ({stats.counts.doing})</span></div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><span className="text-sm text-slate-600">返修中 ({stats.counts.revision})</span></div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gray-200" /><span className="text-sm text-slate-600">未开始 ({stats.counts.todo})</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-slate-200" /><span className="text-sm text-slate-600">未开始 ({stats.counts.todo})</span></div>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm lg:col-span-2">
+
+            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
               <h3 className="font-bold text-slate-800 mb-4 text-center">各阶段积压与返修情况</h3>
               <div className="space-y-4">
                 {stageStats.map((stage) => (
                   <div key={stage.name} className="flex items-center gap-4">
                     <div className="w-24 text-sm font-medium text-slate-600">{stage.name}</div>
-                    <div className="flex-1 h-8 bg-gray-50 rounded-md flex overflow-hidden">
-                      {stage.revision > 0 && <div className="h-full bg-red-400 flex items-center justify-center text-white text-xs font-bold" style={{ width: `${(stage.revision / (stats.totalCharacters || 1)) * 100}%` }}>{stage.revision} 返修</div>}
-                      {stage.doing > 0 && <div className="h-full bg-blue-400 flex items-center justify-center text-white text-xs font-bold border-l border-white/20" style={{ width: `${(stage.doing / (stats.totalCharacters || 1)) * 100}%` }}>{stage.doing} 进行</div>}
+                    <div className="flex-1 h-8 bg-slate-50 rounded-md flex overflow-hidden">
+                      {stage.revision > 0 && (
+                        <div 
+                          className="h-full bg-red-400 flex items-center justify-center text-white text-[10px] md:text-xs font-bold transition-all duration-500" 
+                          style={{ width: `${(stage.revision / (stats.totalCharacters || 1)) * 100}%` }}
+                        >
+                          {stage.revision} 返修
+                        </div>
+                      )}
+                      {stage.doing > 0 && (
+                        <div 
+                          className="h-full bg-blue-400 flex items-center justify-center text-white text-[10px] md:text-xs font-bold border-l border-white/20 transition-all duration-500" 
+                          style={{ width: `${(stage.doing / (stats.totalCharacters || 1)) * 100}%` }}
+                        >
+                          {stage.doing} 进行
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -226,33 +275,46 @@ export default function App() {
       )}
 
       {viewMode === 'list' && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="px-6 py-4 font-semibold text-slate-700">角色信息</th>
-                  <th className="px-6 py-4 font-semibold text-slate-700">整体进度</th>
-                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">正比立绘</th>
-                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">Q版小人</th>
-                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">2D拆分</th>
-                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">Spine动画</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 whitespace-nowrap">角色信息</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 whitespace-nowrap">整体进度</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center whitespace-nowrap">正比立绘</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center whitespace-nowrap">Q版小人</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center whitespace-nowrap">2D拆分</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center whitespace-nowrap">Spine动画</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {stats.data.map((char) => (
-                  <tr key={char.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={char.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-slate-900 flex items-center gap-2">{char.name}<PriorityBadge priority={char.priority} /></div>
+                        <div className="font-medium text-slate-900 flex items-center gap-2">
+                          {char.name}
+                          <PriorityBadge priority={char.priority} />
+                        </div>
                         <div className="text-xs text-slate-400 mt-0.5 uppercase tracking-tighter">{char.role}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 w-48"><ProgressBar character={char} /></td>
-                    <td className="px-6 py-4 text-center"><div className="flex justify-center"><StatusBadge status={char.illustration} /></div></td>
-                    <td className="px-6 py-4 text-center"><div className="flex justify-center"><StatusBadge status={char.chibi} /></div></td>
-                    <td className="px-6 py-4 text-center"><div className="flex justify-center"><StatusBadge status={char.spine2d} /></div></td>
-                    <td className="px-6 py-4 text-center"><div className="flex justify-center"><StatusBadge status={char.spineAnim} /></div></td>
+                    <td className="px-6 py-4 min-w-[120px]">
+                      <ProgressBar character={char} />
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center"><StatusBadge status={char.illustration} /></div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center"><StatusBadge status={char.chibi} /></div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center"><StatusBadge status={char.spine2d} /></div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center"><StatusBadge status={char.spineAnim} /></div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
