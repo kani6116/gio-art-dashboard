@@ -1,4 +1,4 @@
-<!doctype html>
+/* <!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -6,20 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>角色资产进度看板</title>
     
-    <!-- 引入 Tailwind CDN -->
+    <!-- 关键修改：在这里引入 Tailwind CDN 脚本 -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- 保持基础配置，防止 JS 加载前的样式混乱 -->
     <script>
-      // 显式定义配置对象，避免被误判为样式选择器
-      window.tailwind.config = {
+      tailwind.config = {
         theme: {
           extend: {}
         }
       }
     </script>
+    <style>
+      body { 
+        margin: 0; 
+        background-color: #f8fafc; 
+      }
+    </style>
   </head>
-  <body class="m-0 bg-slate-50">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
-</html>
+</html> */
