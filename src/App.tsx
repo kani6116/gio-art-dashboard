@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { List, AlertCircle, CheckCircle2, Clock, BarChart3, Filter, Flag } from 'lucide-react';
 
 // --- 类型定义 ---
@@ -8,12 +8,12 @@ type Priority = 'p0' | 'p1' | 'p2';
 interface Character {
   id: string;
   name: string;
-  role: string;       // 角色身份描述
-  priority: Priority; // 优先级
-  illustration: Status; // 正比立绘
-  chibi: Status;        // Q版跑图
-  spine2d: Status;      // 2D拆分
-  spineAnim: Status;    // Spine动画
+  role: string;
+  priority: Priority;
+  illustration: Status;
+  chibi: Status;
+  spine2d: Status;
+  spineAnim: Status;
 }
 
 // --- 模拟数据 ---
@@ -54,6 +54,8 @@ const STAGES = [
   { key: 'spineAnim', label: 'Spine动画' },
 ] as const;
 
+// --- 组件部分 ---
+
 const StatusBadge = ({ status }: { status: Status }) => {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
@@ -75,15 +77,16 @@ const PriorityBadge = ({ priority }: { priority: Priority }) => {
 };
 
 const ProgressBar = ({ character }: { character: Character }) => {
+  const total = 4;
   let completed = 0;
   if (character.illustration === 'done') completed++;
   if (character.chibi === 'done') completed++;
   if (character.spine2d === 'done') completed++;
   if (character.spineAnim === 'done') completed++;
-  const percent = (completed / 4) * 100;
+  const percent = (completed / total) * 100;
   return (
-    <div className="w-full bg-gray-100 rounded-full h-2 mt-2">
-      <div className="bg-green-500 h-2 rounded-full transition-all duration-500" style={{ width: `${percent}%` }} />
+    <div className="w-full bg-gray-100 rounded-full h-2 mt-2 overflow-hidden">
+      <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${percent}%` }} />
     </div>
   );
 };
@@ -96,10 +99,8 @@ const SimplePieChart = ({ data, size = 120 }: { data: { value: number; color: st
     <svg width={size} height={size} viewBox="-1 -1 2 2" style={{ transform: 'rotate(-90deg)' }}>
       {data.map((slice, i) => {
         const sliceAngle = (slice.value / total) * 2 * Math.PI;
-        const x1 = Math.cos(currentAngle);
-        const y1 = Math.sin(currentAngle);
-        const x2 = Math.cos(currentAngle + sliceAngle);
-        const y2 = Math.sin(currentAngle + sliceAngle);
+        const x1 = Math.cos(currentAngle); const y1 = Math.sin(currentAngle);
+        const x2 = Math.cos(currentAngle + sliceAngle); const y2 = Math.sin(currentAngle + sliceAngle);
         const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
         const pathData = `M 0 0 L ${x1} ${y1} A 1 1 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
         currentAngle += sliceAngle;
@@ -109,7 +110,7 @@ const SimplePieChart = ({ data, size = 120 }: { data: { value: number; color: st
   );
 };
 
-export default function App() {
+export default function GameArtDashboard() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'list'>('dashboard');
   const [filterPriority, setFilterPriority] = useState<Priority | 'all'>('all');
 
@@ -119,11 +120,7 @@ export default function App() {
     let doingCount = 0;
     let revisionCount = 0;
     let todoCount = 0;
-
-    const filteredData = filterPriority === 'all' 
-      ? INITIAL_DATA 
-      : INITIAL_DATA.filter(c => c.priority === filterPriority);
-
+    const filteredData = filterPriority === 'all' ? INITIAL_DATA : INITIAL_DATA.filter(c => c.priority === filterPriority);
     filteredData.forEach(char => {
       STAGES.forEach(stage => {
         const status = char[stage.key];
@@ -134,7 +131,6 @@ export default function App() {
         else todoCount++;
       });
     });
-
     return {
       totalCharacters: filteredData.length,
       progress: totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0,
@@ -145,8 +141,7 @@ export default function App() {
 
   const stageStats = useMemo(() => {
     return STAGES.map(stage => {
-      let revision = 0;
-      let doing = 0;
+      let revision = 0; let doing = 0;
       stats.data.forEach(char => {
         if (char[stage.key] === 'revision') revision++;
         if (char[stage.key] === 'doing') doing++;
@@ -160,7 +155,7 @@ export default function App() {
       <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">角色资产进度看板</h1>
-          <p className="text-slate-500 text-sm mt-1">项目代号: Project Gio | 更新时间: 2026-01-9</p>
+          <p className="text-slate-500 text-sm mt-1">项目代号: Project Gio | 更新时间: 2026-01-8</p>
         </div>
         <div className="flex bg-white p-1 rounded-lg shadow-sm border border-gray-200">
           <button onClick={() => setViewMode('dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'dashboard' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-gray-50'}`}><BarChart3 size={16} /> 仪表盘</button>
@@ -179,7 +174,7 @@ export default function App() {
         })}
       </div>
 
-      {viewMode === 'dashboard' ? (
+      {viewMode === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
@@ -194,14 +189,17 @@ export default function App() {
               <div className="absolute right-0 top-0 p-4 opacity-10"><AlertCircle size={64} className="text-red-500" /></div>
               <div className="text-red-600 text-sm font-medium mb-1">需关注 (返修中)</div>
               <div className="text-3xl font-bold text-red-700">{stats.counts.revision} <span className="text-sm font-normal text-red-400">个环节</span></div>
+              <p className="text-xs text-red-400 mt-2">阻碍流程推进</p>
             </div>
             <div className="bg-white p-5 rounded-xl border border-blue-100 shadow-sm">
               <div className="text-blue-600 text-sm font-medium mb-1">制作中</div>
               <div className="text-3xl font-bold text-blue-700">{stats.counts.doing} <span className="text-sm font-normal text-blue-400">个环节</span></div>
+              <p className="text-xs text-blue-400 mt-2">正常流转中</p>
             </div>
             <div className="bg-white p-5 rounded-xl border border-green-100 shadow-sm">
               <div className="text-green-600 text-sm font-medium mb-1">已交付</div>
-              <div className="text-3xl font-bold text-green-700">{stats.counts.done} <span className="text-sm font-normal text-green-400">个环节</span></div>
+              <div className="text-3xl font-bold text-green-700">{stats.counts.done} <span className="text-sm font-normal text-blue-400">个环节</span></div>
+              <p className="text-xs text-green-400 mt-2">等待下一步</p>
             </div>
           </div>
 
@@ -211,9 +209,10 @@ export default function App() {
               <div className="flex items-center gap-8 justify-center">
                 <SimplePieChart size={160} data={[{ value: stats.counts.done, color: STATUS_CONFIG.done.barColor },{ value: stats.counts.doing, color: STATUS_CONFIG.doing.barColor },{ value: stats.counts.revision, color: STATUS_CONFIG.revision.barColor },{ value: stats.counts.todo, color: STATUS_CONFIG.todo.barColor }]} />
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm text-slate-600">已完成</span></div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm text-slate-600">进行中</span></div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><span className="text-sm text-slate-600">返修中</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm text-slate-600">已完成 ({stats.counts.done})</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm text-slate-600">进行中 ({stats.counts.doing})</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><span className="text-sm text-slate-600">返修中 ({stats.counts.revision})</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gray-200" /><span className="text-sm text-slate-600">未开始 ({stats.counts.todo})</span></div>
                 </div>
               </div>
             </div>
@@ -224,16 +223,19 @@ export default function App() {
                   <div key={stage.name} className="flex items-center gap-4">
                     <div className="w-24 text-sm font-medium text-slate-600">{stage.name}</div>
                     <div className="flex-1 h-8 bg-gray-50 rounded-md flex overflow-hidden">
-                      {stage.revision > 0 && <div className="h-full bg-red-400 flex items-center justify-center text-white text-xs font-bold" style={{ width: `${(stage.revision / (stats.totalCharacters || 1)) * 100}%` }}>{stage.revision}</div>}
-                      {stage.doing > 0 && <div className="h-full bg-blue-400 flex items-center justify-center text-white text-xs font-bold border-l border-white/20" style={{ width: `${(stage.doing / (stats.totalCharacters || 1)) * 100}%` }}>{stage.doing}</div>}
+                      {stage.revision > 0 && <div className="h-full bg-red-400 flex items-center justify-center text-white text-xs font-bold" style={{ width: `${(stage.revision / (stats.totalCharacters || 1)) * 100}%` }}>{stage.revision} 返修</div>}
+                      {stage.doing > 0 && <div className="h-full bg-blue-400 flex items-center justify-center text-white text-xs font-bold border-l border-white/20" style={{ width: `${(stage.doing / (stats.totalCharacters || 1)) * 100}%` }}>{stage.doing} 进行</div>}
                     </div>
                   </div>
                 ))}
               </div>
+              <p className="text-xs text-slate-400 mt-4 text-center">*此图表展示当前筛选下，哪个制作环节是瓶颈</p>
             </div>
           </div>
         </div>
-      ) : (
+      )}
+
+      {viewMode === 'list' && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -241,15 +243,20 @@ export default function App() {
                 <tr>
                   <th className="px-6 py-4 font-semibold text-slate-700">角色信息</th>
                   <th className="px-6 py-4 font-semibold text-slate-700">整体进度</th>
-                  {STAGES.map(s => <th key={s.key} className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">{s.label}</th>)}
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">正比立绘</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">Q版小人</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">2D拆分</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700 w-32 text-center">Spine动画</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {stats.data.map((char) => (
                   <tr key={char.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-slate-900 flex items-center gap-2">{char.name}<PriorityBadge priority={char.priority} /></div>
-                      <div className="text-xs text-slate-400 mt-0.5">{char.role}</div>
+                      <div>
+                        <div className="font-medium text-slate-900 flex items-center gap-2">{char.name}<PriorityBadge priority={char.priority} /></div>
+                        <div className="text-xs text-slate-400 mt-0.5">{char.role}</div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 w-48"><ProgressBar character={char} /></td>
                     <td className="px-6 py-4 text-center"><div className="flex justify-center"><StatusBadge status={char.illustration} /></div></td>
