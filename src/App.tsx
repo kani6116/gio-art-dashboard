@@ -27,9 +27,9 @@ const INITIAL_DATA: Character[] = [
   { id: '1014', name: '艾薇', role: '男一未婚妻', priority: 'p1', illustration: 'done', chibi: 'done', spine2d: 'doing', spineAnim: 'todo' },
   { id: '1005', name: '史密斯', role: '管家', priority: 'p0', illustration: 'done', chibi: 'done', spine2d: 'doing', spineAnim: 'todo' },
   { id: '1006', name: '朱利安', role: '律师', priority: 'p0', illustration: 'done', chibi: 'done', spine2d: 'doing', spineAnim: 'todo' },
-  { id: '1007', name: '祖丽', role: '闺蜜', priority: 'p1', illustration: 'revision', chibi: 'revision', spine2d: 'doing', spineAnim: 'todo' },
+  { id: '1007', name: '祖丽', role: '闺蜜', priority: 'p1', illustration: 'revision', chibi: 'revision', spine2d: 'todo', spineAnim: 'todo' },
   { id: '1008', name: '小杰特', role: '豹猫', priority: 'p0', illustration: 'done', chibi: 'done', spine2d: 'done', spineAnim: 'todo' },
-  { id: '1001', name: '老爷爷Revan', role: '男三老年', priority: 'p0', illustration: 'doing', chibi: 'todo', spine2d: 'todo', spineAnim: 'todo' },
+  { id: '1001', name: '老爷爷Revan', role: '男三老年', priority: 'p0', illustration: 'done', chibi: 'todo', spine2d: 'todo', spineAnim: 'todo' },
   { id: '1009', name: '迦文', role: '管理员', priority: 'p0', illustration: 'doing', chibi: 'todo', spine2d: 'todo', spineAnim: 'todo' },
   { id: '1015', name: '混混A', role: 'npc', priority: 'p2', illustration: 'todo', chibi: 'todo', spine2d: 'todo', spineAnim: 'todo' },
 ];
