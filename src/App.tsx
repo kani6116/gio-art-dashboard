@@ -16,7 +16,7 @@ interface Character {
   spineAnim: Status;
 }
 
-// --- 模拟数据 ---
+// --- 模拟数据 (保持原样，不删减文字) ---
 const INITIAL_DATA: Character[] = [
   { id: '1002', name: '艾琳', role: '女主', priority: 'p0', illustration: 'done', chibi: 'done', spine2d: 'done', spineAnim: 'doing' },
   { id: '1011', name: '艾德里安', role: '男一', priority: 'p0', illustration: 'done', chibi: 'revision', spine2d: 'todo', spineAnim: 'todo' },
@@ -54,7 +54,7 @@ const STAGES = [
   { key: 'spineAnim', label: 'Spine动画' },
 ] as const;
 
-// --- 组件部分 ---
+// --- 子组件 ---
 
 const StatusBadge = ({ status }: { status: Status }) => {
   const config = STATUS_CONFIG[status];
@@ -67,26 +67,17 @@ const StatusBadge = ({ status }: { status: Status }) => {
   );
 };
 
-const PriorityBadge = ({ priority }: { priority: Priority }) => {
-  const config = PRIORITY_CONFIG[priority];
-  return (
-    <div className={`flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold border ${config.color}`}>
-      {priority.toUpperCase()}
-    </div>
-  );
-};
+const PriorityBadge = ({ priority }: { priority: Priority }) => (
+  <div className={`flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold border ${PRIORITY_CONFIG[priority].color}`}>
+    {priority.toUpperCase()}
+  </div>
+);
 
 const ProgressBar = ({ character }: { character: Character }) => {
-  const total = 4;
-  let completed = 0;
-  if (character.illustration === 'done') completed++;
-  if (character.chibi === 'done') completed++;
-  if (character.spine2d === 'done') completed++;
-  if (character.spineAnim === 'done') completed++;
-  const percent = (completed / total) * 100;
+  const completed = [character.illustration, character.chibi, character.spine2d, character.spineAnim].filter(s => s === 'done').length;
   return (
     <div className="w-full bg-gray-100 rounded-full h-2 mt-2 overflow-hidden">
-      <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${percent}%` }} />
+      <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${(completed / 4) * 100}%` }} />
     </div>
   );
 };
@@ -110,7 +101,9 @@ const SimplePieChart = ({ data, size = 120 }: { data: { value: number; color: st
   );
 };
 
-export default function GameArtDashboard() {
+// --- 主组件 (重命名为 App 以修复部署错误) ---
+
+export default function App() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'list'>('dashboard');
   const [filterPriority, setFilterPriority] = useState<Priority | 'all'>('all');
 
@@ -155,7 +148,7 @@ export default function GameArtDashboard() {
       <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">角色资产进度看板</h1>
-          <p className="text-slate-500 text-sm mt-1">项目代号: Project Gio | 更新时间: 2026-01-8</p>
+          <p className="text-slate-500 text-sm mt-1">项目代号: Project Gio | 更新时间: 2026-01-9</p>
         </div>
         <div className="flex bg-white p-1 rounded-lg shadow-sm border border-gray-200">
           <button onClick={() => setViewMode('dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'dashboard' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-gray-50'}`}><BarChart3 size={16} /> 仪表盘</button>
@@ -163,15 +156,12 @@ export default function GameArtDashboard() {
         </div>
       </header>
 
-      <div className="mb-6 flex items-center gap-4 overflow-x-auto pb-2">
-        <span className="text-sm font-medium text-slate-500 flex items-center gap-1"><Filter size={14}/> 优先级筛选:</span>
-        <button onClick={() => setFilterPriority('all')} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${filterPriority === 'all' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-600 border-gray-200 hover:border-slate-300'}`}>全部角色</button>
-        {(['p0', 'p1', 'p2'] as const).map(p => {
-           const activeColor = p === 'p0' ? 'bg-rose-600 border-rose-600' : p === 'p1' ? 'bg-amber-500 border-amber-500' : 'bg-slate-500 border-slate-500';
-           return (
-            <button key={p} onClick={() => setFilterPriority(p)} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1 ${filterPriority === p ? `${activeColor} text-white` : 'bg-white text-slate-600 border-gray-200 hover:border-slate-300'}`}><Flag size={10} className={filterPriority === p ? 'fill-current' : ''}/>{p.toUpperCase()}</button>
-           )
-        })}
+      <div className="mb-6 flex items-center gap-4 overflow-x-auto pb-2 border-b border-gray-100">
+        <span className="text-sm font-medium text-slate-500 shrink-0 flex items-center gap-1"><Filter size={14}/> 筛选:</span>
+        <button onClick={() => setFilterPriority('all')} className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 ${filterPriority === 'all' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-gray-200'}`}>全部角色</button>
+        {(['p0', 'p1', 'p2'] as const).map(p => (
+          <button key={p} onClick={() => setFilterPriority(p)} className={`px-3 py-1.5 rounded-full text-xs font-medium border shrink-0 ${filterPriority === p ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200'}`}>{p.toUpperCase()}</button>
+        ))}
       </div>
 
       {viewMode === 'dashboard' && (
@@ -183,7 +173,7 @@ export default function GameArtDashboard() {
                 <div className="text-3xl font-bold text-slate-900">{stats.progress}%</div>
                 <div className="text-xs text-slate-400 mb-1.5">基于当前筛选</div>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-1.5 mt-3"><div className="bg-indigo-600 h-1.5 rounded-full" style={{ width: `${stats.progress}%` }} /></div>
+              <div className="w-full bg-gray-100 rounded-full h-1.5 mt-3"><div className="bg-indigo-600 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${stats.progress}%` }} /></div>
             </div>
             <div className="bg-white p-5 rounded-xl border border-red-100 shadow-sm relative overflow-hidden">
               <div className="absolute right-0 top-0 p-4 opacity-10"><AlertCircle size={64} className="text-red-500" /></div>
@@ -217,7 +207,7 @@ export default function GameArtDashboard() {
               </div>
             </div>
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm lg:col-span-2">
-              <h3 className="font-bold text-slate-800 mb-4">各阶段积压与返修情况</h3>
+              <h3 className="font-bold text-slate-800 mb-4 text-center">各阶段积压与返修情况</h3>
               <div className="space-y-4">
                 {stageStats.map((stage) => (
                   <div key={stage.name} className="flex items-center gap-4">
@@ -255,7 +245,7 @@ export default function GameArtDashboard() {
                     <td className="px-6 py-4">
                       <div>
                         <div className="font-medium text-slate-900 flex items-center gap-2">{char.name}<PriorityBadge priority={char.priority} /></div>
-                        <div className="text-xs text-slate-400 mt-0.5">{char.role}</div>
+                        <div className="text-xs text-slate-400 mt-0.5 uppercase tracking-tighter">{char.role}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 w-48"><ProgressBar character={char} /></td>
